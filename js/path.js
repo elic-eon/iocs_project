@@ -1,16 +1,16 @@
 var stage = new Konva.Stage({
   container: 'container',
-  width: 1920,
-  height: 1080,
+  width: 1600,
+  height: 900,
 });
 
 var layer = new Konva.Layer({
   scale : {
-	x : 0.5,
-	y : 0.5
+	x : 0.6,
+	y : 0.6
 	},
-  y : 250,
-  x : -300,
+  y : 200,
+  x : -600,
 
   });
 
