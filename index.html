@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://cdn.rawgit.com/konvajs/konva/0.9.5/konva.min.js"></script>
   <script src="https://cdn.firebase.com/js/client/2.2.5/firebase.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <meta charset="utf-8">
   <title>Hsinchu Map Demo</title>
   <style>
@@ -10,13 +12,52 @@
       margin: 0;
       padding: 0;
       overflow: scroll;
-      background-color: #B5CDE5;
+      background-color: #CAD7E4;
+			font-family: Meiryo, "微軟正黑體", "Microsoft JhengHei";
     }
+		#buttons {
+			position: absolute;
+			top: 40px;
+			left: 30px;
+		}
   </style>
 </head>
 <body>
   <div id="container"></div>
-  <script src="./js/path.js"></script>
+	<div id="buttons">
+		<div class="row">
+			<div class="col-md-3">
+				<span>Regions</span>
+			</div>
+			<div class="col-md-3">
+				<button id="activate_regions" class="btn-sm btn-success btn">activate</button>
+			</div>
+			<div class="col-md-3">
+				<button id="deactivate_regions" class="btn-sm btn-danger btn">deactivate</button>
+			</div>
+		</div>
+		</br>
+		<div class="row">
+			<div class="col-md-3">
+				<span>Rivers</span>
+			</div>
+			<div class="col-md-3">
+				<button id="activate_rivers" class="btn btn-sm btn-success">activate</button>
+			</div>
+			<div class="col-md-3">
+				<button id="deactivate_rivers" class="btn btn-sm btn-danger">deactivate</button>
+			</div>
+		</div>
+		<div>
+			</br><span>SQL：</span></br>
+			<textarea class="form-control" cols="34" rows="7" id="sql"></textarea>
+			</br>
+			<button id="query" button class="btn">
+				<span>query</span>
+			</button>
+		</div>
+	</div>
+  <script src="http://people.cs.nctu.edu.tw/~ssuyi/map/js/path.js"></script>
 </body>
 </html>
 
