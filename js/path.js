@@ -24,6 +24,16 @@ var layer_river = new Konva.Layer({
 
   });
 
+var layer_point = new Konva.Layer({
+  scale : {
+	x : 0.6,
+	y : 0.6
+	},
+  y : 200,
+  x : -550,
+
+  });
+
 var layer_text = new Konva.Layer();
 
 var tooltip = new Konva.Label({
@@ -33,15 +43,15 @@ var tooltip = new Konva.Label({
     });
 
 var infoText = new Konva.Text({
-	x: 1000,
-	y: 80,
+	x: 10,
+	y: 430,
 	text: '點擊鄉鎮、河流查看更多訊息',
 	fontSize: 24,
 	fontFamily: 'Meiryo, "微軟正黑體", "Microsoft JhengHei"',
 	fill: '#555',
 	width: 400,
 	padding: 20,
-	align: 'center'
+	align: 'left'
 });
 
 tooltip.add(new Konva.Tag({
@@ -64,11 +74,27 @@ tooltip.add(new Konva.Text({
 	fill: 'white'
 }));
 
+var defaultImgObj = new Image();
+
+var pointImg = new Konva.Image({
+	x: 1200,
+	y: 80,
+	draggable: true,
+	image: defaultImgObj,
+});
+
 layer_text.add(tooltip);
 layer_text.add(infoText);
+layer_text.add(pointImg);
 stage.add(layer);
 stage.add(layer_river);
+stage.add(layer_point);
 stage.add(layer_text);
+
+defaultImgObj.src = 'http://konvajs.github.io/assets/yoda.jpg';
+defaultImgObj.onload = function() {
+	layer_text.draw();
+}
 
 var ref = new Firebase('https://iocs-nctu.firebaseio.com/regions');
 ref.orderByKey().on("child_added", function(snapshot) {
@@ -143,8 +169,61 @@ ref_river.orderByKey().on("child_added", function(snapshot) {
 		layer_text.draw();
 	});
 
+	node.on('mouseup', function() {
+		infoText.setText(vals.name + "\n" +
+										"長度: " + vals.river_length + "KM");
+		layer_text.draw();
+	});
+
   layer_river.add(node);
 	layer_river.draw();
+});
+
+var ref_spot = new Firebase('https://iocs-nctu.firebaseio.com/intrest_spot');
+ref_spot.orderByKey().on("child_added", function(snapshot) {
+  var vals = snapshot.val();
+  vals.name = snapshot.key();
+	//console.log(vals.name);
+  var node = new Konva.RegularPolygon({
+		x: vals.x,
+		y: vals.y,
+		sides: 3,
+		radius: 15,
+		fill: 'red',
+		//rotation: 180,
+		draggable : true,
+		stroke: 'red',
+		strokeWidth : 0,
+		name : vals.name
+  });
+
+	var myImage = new Image();
+	myImage.src = vals.url_img;
+
+	node.on('mouseover mousemove dragmove', function() {
+		var mousePos = this.getStage().getPointerPosition();
+		tooltip.position({
+			x: mousePos.x,
+			y: mousePos.y - 5
+		});
+		tooltip.getText().setText(vals.name);
+		tooltip.show();
+		tooltip.moveToTop();
+		layer_text.draw();
+	});
+	
+	node.on('mouseout', function(evt) {
+		tooltip.hide();
+		layer_text.draw();
+	});
+
+	node.on('click', function() {
+		pointImg.setImage(myImage);
+		layer_text.draw();
+	});
+
+  layer_point.add(node);
+	layer_point.draw();
 });
 
 function modify_listener(layer, f_on) {
@@ -159,7 +238,6 @@ function include(arr,obj) {
 }
 
 function highlight(layer, cities) {
-	//console.log(cities);
 	var nodes = layer.getChildren().toArray();
 	for(var n = 0; n < nodes.length; n++) {
 		var shape = nodes[n];
@@ -175,11 +253,6 @@ function highlight(layer, cities) {
 	}
 }
 
-function writeMessage(message) {
-	text.setText(message);
-  layer_text.draw();
-}
-
 document.getElementById('activate_regions').addEventListener('click', function() {
 	modify_listener(layer, true);
 }, false);
@@ -192,6 +265,18 @@ document.getElementById('activate_rivers').addEventListener('click', function() 
 document.getElementById('deactivate_rivers').addEventListener('click', function() {
 	modify_listener(layer_river, false);
 }, false);
+//document.getElementById('save_position').addEventListener('click', function() {
+	//var nodes = layer_point.getChildren().toArray();
+	//for(var n = 0; n < nodes.length; n++) {
+		//var shape = nodes[n];
+		//var name = shape.getAttr('name');
+		//var savebackRef = new Firebase('https://iocs-nctu.firebaseio.com/intrest_spot/' + name);
+		//savebackRef.update({
+			//x: shape.getAttr('x'),
+			//y: shape.getAttr('y')
+		//});
+	//}
+//}, false);
 document.getElementById('query').addEventListener('click', function() {
 	$sql = document.getElementById('sql').value;
 	$.post("http://people.cs.nctu.edu.tw/~ssuyi/api/query.php",
